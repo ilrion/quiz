@@ -3,7 +3,6 @@ var models = require('../models/models.js');
 // Autoload - PARAM Se carga lo primero si llega el parametro quizId
 
 exports.load = function(req, res, next, quizId) {
-  console.log('Dentro del load con quizID:' +  quizId);
   models.Quiz.findById(quizId).then(
     function(quiz) {
       if (quiz) {
@@ -17,9 +16,22 @@ exports.load = function(req, res, next, quizId) {
 // GET /quizes/
 
 exports.index = function(req, res) {
-  models.Quiz.findAll().then(function(quizes) {
-    res.render('quizes/index', {quizes: quizes});
-  }) 
+  if (req.query.search) {
+    var search_like = '%' + req.query.search.replace(' ','%') + '%';
+
+    console.log('Dentro de index con search_like: ' +  search_like);
+
+    models.Quiz.findAll({where: ["pregunta like ?", search_like],
+       order: [['pregunta','ASC']] })
+    .then(function(quizes) {
+        res.render('quizes/index', {quizes: quizes});
+    }) 
+  } 
+  else {
+    models.Quiz.findAll().then(function(quizes) {
+        res.render('quizes/index', {quizes: quizes});
+    }) 
+  } 
 };
 
 // GET /quizes/:id
