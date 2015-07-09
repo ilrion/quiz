@@ -8,6 +8,9 @@ router.get('/', function(req, res) {
   res.render('index', { title: 'Quiz' });
 });
 
+// Autoload cuando en una petición llega el parámetro quizId
+router.param('quizId', quizController.load);
+
 router.get('/author', function(req, res) {
   res.render('author');
 });
