@@ -1,26 +1,17 @@
 // MW de autorización de accesos HTTP restringidos
 exports.autoLogout = function(req, res, next){
   var accesoActual = new Date(); 
-  console.log("accesoAnterior: " + req.session.accesoAnterior);
-  console.log("accesoAnterior.getTime(): " + Date.parse(req.session.accesoAnterior));
-  console.log("accesoActual: " + accesoActual);
-  console.log("accesoActual.getTime(): " + accesoActual.getTime());
-
-  console.log("Diferencia de milisegundos: " + (accesoActual.getTime() -
-       Date.parse(req.session.accesoAnterior)));
 
   if ((req.session.accesoAnterior) &&
       (req.session.user) &&
       (accesoActual.getTime() - 
-       Date.parse(req.session.accesoAnterior) > 60000))
+       Date.parse(req.session.accesoAnterior) > 120000))
   {
-    console.log("LOGOUT");
     delete req.session.accesoAnterior; 
     res.redirect('/logout');
   }
   else {
     req.session.accesoAnterior = accesoActual;
-    console.log("accesoAnteriorActualizado: " + req.session.accesoAnterior);
     next();
   }
 };

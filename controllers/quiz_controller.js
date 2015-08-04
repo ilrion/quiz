@@ -130,4 +130,36 @@ exports.destroy = function(req, res) {
   }).catch(function(error){next(error)});
 };
 
+// GET /quizes/statistics
+
+exports.statistics = function(req, res) {
+
+  var statistics = {totalQuizes:0,
+                    totalComments:0,
+                    avgCommentsQuiz:0,
+                    numQuizesSinComments:0,
+                    numQuizesConComments:0};
+
+  models.sequelize.query(
+     'SELECT (SELECT COUNT(1) FROM "Quizzes") AS totalQuizes, '
+    +'      (SELECT COUNT(1) FROM "Comments") AS totalComments,'
+    +'      (SELECT COUNT(1) FROM "Quizzes" '
+    +'        WHERE Id IN (SELECT "QuizId" FROM "Comments")) '
+    +'              AS numQuizesConComments,'
+    +'      (SELECT COUNT(1) FROM "Quizzes" '
+    +'        WHERE Id NOT IN (SELECT "QuizId" FROM "Comments")) '
+    +'              AS numQuizesSinComments',
+    {type: models.sequelize.QueryTypes.SELECT}).then(function(estadisticas) {
+      console.log(estadisticas);
+      statistics.totalQuizes = estadisticas[0].totalQuizes;
+      statistics.totalComments = estadisticas[0].totalComments;
+      statistics.avgCommentsQuiz = 
+                 (statistics.totalComments/statistics.totalQuizes).toFixed(2);
+      statistics.numQuizesSinComments = estadisticas[0].numQuizesSinComments;
+      statistics.numQuizesConComments = estadisticas[0].numQuizesConComments;
+      console.log(statistics);
+      res.render('quizes/statistics', {statistics: statistics, errors: []});
+    })
+};
+
 //  console.log("req.quiz.id: " + req.quiz.id);
