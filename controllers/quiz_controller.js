@@ -141,22 +141,22 @@ exports.statistics = function(req, res) {
                     numQuizesConComments:0};
 
   models.sequelize.query(
-     'SELECT (SELECT COUNT(1) FROM "Quizzes") AS totalQuizes, '
-    +'      (SELECT COUNT(1) FROM "Comments") AS totalComments,'
+     'SELECT (SELECT COUNT(1) FROM "Quizzes") AS totalquizes, '
+    +'      (SELECT COUNT(1) FROM "Comments") AS totalcomments,'
     +'      (SELECT COUNT(1) FROM "Quizzes" '
     +'        WHERE Id IN (SELECT "QuizId" FROM "Comments")) '
-    +'              AS numQuizesConComments,'
+    +'              AS numquizesconcomments,'
     +'      (SELECT COUNT(1) FROM "Quizzes" '
     +'        WHERE Id NOT IN (SELECT "QuizId" FROM "Comments")) '
-    +'              AS numQuizesSinComments',
+    +'              AS numquizessincomments',
     {type: models.sequelize.QueryTypes.SELECT}).then(function(estadisticas) {
       console.log(estadisticas);
-      statistics.totalQuizes = estadisticas[0].totalQuizes;
-      statistics.totalComments = estadisticas[0].totalComments;
+      statistics.totalQuizes = estadisticas[0].totalquizes;
+      statistics.totalComments = estadisticas[0].totalcomments;
       statistics.avgCommentsQuiz = 
                  (statistics.totalComments/statistics.totalQuizes).toFixed(2);
-      statistics.numQuizesSinComments = estadisticas[0].numQuizesSinComments;
-      statistics.numQuizesConComments = estadisticas[0].numQuizesConComments;
+      statistics.numQuizesSinComments = estadisticas[0].numquizessincomments;
+      statistics.numQuizesConComments = estadisticas[0].numquizesconcomments;
       console.log(statistics);
       res.render('quizes/statistics', {statistics: statistics, errors: []});
     })
